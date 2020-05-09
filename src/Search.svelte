@@ -1,44 +1,54 @@
 <script>
   import { onMount } from "svelte";
+  import { searchList, stateSearchSubmitted } from "./store.js";
   import axios from "axios";
-  // import tempJson from "./temp.json";
 
-  export let list = undefined;
+  export let env;
+  export let keyword = false;
 
+  const baseUrl =
+    env === "dev"
+      ? "http://localhost:8080/search?kw="
+      : "https://atagl.com/search?kw=";
+
+  $: fullTitle = keyword ? `${keyword} - ATAGL 검색` : "ATAGL";
   let ref;
   let loading;
+  let process;
 
   onMount(() => {
+    autocomplete(ref);
     ref.focus();
   });
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
+    clearInterval(process);
+    stateSearchSubmitted.set(true);
     loading = true;
-    console.log(event.target.search.value);
-    const res = await axios.get(
-      `http://localhost:8080/search?kw=${event.target.search.value}`
-    );
-    // let iherbList = res.iherbList.map(item => ({
-    let iherbList = res.data.iherbList.map(item => ({
-      ...item,
-      // image: "xx" + item.image,
-      price: parseInt(item.price),
-      rating: parseFloat(item.rating),
-      ratingCount: parseInt(item.ratingCount),
-      mallName: "아이허브"
-    }));
-    // let coupangList = res.coupangList.map(item => ({
-    let coupangList = res.data.coupangList.map(item => ({
-      ...item,
-      // image: "xx" + item.image,
-      price: parseInt(item.price),
-      rating: parseFloat(item.rating),
-      ratingCount: parseInt(item.ratingCount),
-      mallName: "쿠팡"
-    }));
-    loading = false;
-    list = combineList(iherbList, coupangList);
+    keyword = event.target.search.value.trim().replace(/\s\s+/g, "+");
+    // console.log(keyword);
+    process = setTimeout(async () => {
+      const res = await axios.get(baseUrl + keyword);
+      let iherbList = res.data.iherbList.map(item => ({
+        ...item,
+        price: parseInt(item.price),
+        rating: item.rating ? parseFloat(item.rating) : 0,
+        ratingCount: item.ratingCount ? parseInt(item.ratingCount) : 0,
+        mallName: "iHerb"
+      }));
+      let coupangList = res.data.coupangList.map(item => ({
+        ...item,
+        price: parseInt(item.price),
+        rating: item.rating ? parseFloat(item.rating) : 0,
+        ratingCount: item.ratingCount ? parseInt(item.ratingCount) : 0,
+        mallName: "Coupang"
+      }));
+      loading = false;
+      let list = combineList(iherbList, coupangList);
+      searchList.set(list);
+    }, 300);
   }
+
   function combineList(a, b) {
     let aLen = a.length;
     let bLen = b.length;
@@ -72,22 +82,35 @@
 </script>
 
 <style>
-  .wrapper-search {
-    width: 14rem;
-    margin: 8px auto;
-  }
   #search {
     border-left: none;
     border-right: none;
     border-radius: 0;
+    background-color: initial;
   }
   #search:focus {
+    border-color: olive;
     box-shadow: none;
+  }
+  .loading::after {
+    border: 0.1rem solid olive;
+    border-radius: 50%;
+    border-right-color: transparent;
+    border-top-color: transparent;
+  }
+  .has-icon-right .form-icon {
+    top: 18px;
   }
 </style>
 
-<div class="wrapper-search">
-  <form on:submit|preventDefault={handleSubmit} class="has-icon-right">
+<svelte:head>
+  <title>{fullTitle}</title>
+</svelte:head>
+<form
+  on:submit|preventDefault={handleSubmit}
+  autocomplete="off"
+  class="has-icon-right">
+  <div class="autocomplete">
     <input
       id="search"
       class="form-input"
@@ -96,11 +119,11 @@
       bind:this={ref}
       required />
     {#if loading}
-      <i class="form-icon loading" />
+      <i class="form-icon loading olive" />
     {:else}
       <button
         on:submit|preventDefault={handleSubmit}
-        class="form-icon icon icon-search btn btn-link" />
+        class="form-icon icon icon-search btn btn-link olive" />
     {/if}
-  </form>
-</div>
+  </div>
+</form>
