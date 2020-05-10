@@ -2,13 +2,11 @@ html,
 body {
   box-sizing: border-box;
 }
-
 *,
 *:before,
 *:after {
   box-sizing: inherit;
 }
-
 body {
   color: #333;
   font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -46,4 +44,14 @@ body {
 .autocomplete-active {
   background-color: olive !important;
   color: #ffffff;
+}
+.logo-font {
+  font-family: "Tangerine", cursive;
+}
+.no-select {
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }

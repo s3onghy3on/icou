@@ -11,7 +11,7 @@
       ? "http://localhost:8080/search?kw="
       : "https://atagl.com/search?kw=";
 
-  $: fullTitle = keyword ? `${keyword} - ATAGL 검색` : "ATAGL";
+  $: fullTitle = keyword ? `${keyword} - Atagl 검색` : "Atagl";
   let ref;
   let loading;
   let process;

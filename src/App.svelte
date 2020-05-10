@@ -12,16 +12,17 @@
 </script>
 
 <style>
-  .logo {
-    width: 14rem;
-    transition: width 0.3s;
+  h1.logo-font {
+    font-size: 5.6rem;
+    transition: font-size 0.3s;
+  }
+  .logo-font > a {
+    color: #000;
+    text-decoration: none;
   }
   .search {
-    width: 6rem;
+    font-size: 3rem !important;
   }
-  /* .divider[data-content]::after {
-    background: #fff !important;
-  } */
   #btnGoTop {
     position: fixed;
     bottom: 1rem;
@@ -40,16 +41,12 @@
 </style>
 
 <main class="container text-center">
-  <img
-    class="logo"
-    src="https://icousvelte.z12.web.core.windows.net/logo/logo_transparent.png"
-    alt="ATAGL LOGO"
-    title="ATAGL"
-    class:search={$stateSearchSubmitted} />
+  <h1 class="logo-font mb-0" class:search={$stateSearchSubmitted}>
+    <a class="" href="https://atagl.com" title="Atagl">At a gl.</a>
+  </h1>
   <Search env={ENV} />
   {#if $searchList.length}
     <TableManipulator />
-    <!-- <div class="divider text-center" data-content={$searchList.length} /> -->
     <CompareTable />
     <button
       class="btn btn-action tooltip tooltip-left"
@@ -58,5 +55,9 @@
       data-tooltip="페이지 맨 위로">
       <i class="icon icon-arrow-up" />
     </button>
+    <footer class="no-select text-center mt-4 mb-5">
+      <h2 class="logo-font mb-0" title="Atagl">At a gl.</h2>
+      <small title="contact@atagl.com">contact@atagl.com</small>
+    </footer>
   {/if}
 </main>
